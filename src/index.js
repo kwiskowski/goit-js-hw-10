@@ -12,24 +12,25 @@ Notiflix.Notify.init({
 
 import { fetchBreeds, fetchCatByBreed } from './cat-api';
 
-const breedSelect = document.querySelector('.breed-select');
+const breedSelect = document.querySelector('select.breed-select');
 const loader = document.querySelector('.loader');
-const error = document.querySelector('.error');
-const catInfo = document.querySelector('.cat-info');
-
-breedSelect.addEventListener('change', selectCat);
+const error = document.querySelector('p.error');
+const catInfo = document.querySelector('div.cat-info');
 
 error.style.display = 'none';
 
 function selectCat(e) {
   const breedId = e.target.value;
   if (breedId) {
-    loader.style.display = 'block';
+    // loader.style.display = 'inline-block';
+    Notiflix.Loading.standard('Loading...');
     fetchCat(breedId);
   } else {
-    loader.style.display = 'none';
+    // loader.style.display = 'none';
+    Notiflix.Loading.remove();
   }
 }
+breedSelect.addEventListener('change', selectCat);
 
 function fetchCat(breedId) {
   fetchCatByBreed(breedId)
@@ -44,7 +45,8 @@ function fetchCat(breedId) {
       return error;
     })
     .finally(() => {
-      loader.style.display = 'none';
+      // loader.style.display = 'none';
+      Notiflix.Loading.remove();
     });
 }
 
@@ -52,14 +54,13 @@ function showCat(catItemInfo) {
   const { name, description, temperament } = catItemInfo[0].breeds[0];
   const { url } = catItemInfo[0];
   const catInfoHTML = `
-    <img class="postImage" src="${url}" alt="">
+    <img class="postImage" src="${url}" alt="image of a ${name}">
     <div class="postWrapper">
       <h2>${name}</h2>
       <p><strong>Description:</strong> ${description}</p>
       <p><strong>Temperament:</strong> ${temperament}</p>
     </div>
   `;
-
   catInfo.innerHTML = catInfoHTML;
   catInfo.style.display = 'block';
 }
@@ -74,11 +75,12 @@ function fillCatList(breeds) {
 }
 
 function initCatApp() {
-  loader.style.display = 'block';
+  Notiflix.Loading.standard('Loading...');
+  // loader.style.display = 'inline-block';
   fetchBreeds()
     .then(breeds => {
       fillCatList(breeds);
-      var select = new SlimSelect({
+      new SlimSelect({
         select: '.breed-select',
       });
       Notiflix.Notify.info(
@@ -89,10 +91,10 @@ function initCatApp() {
       console.error(error);
     })
     .finally(() => {
-      loader.style.display = 'none';
+      // loader.style.display = 'none';
+      Notiflix.Loading.remove();
     });
 }
-
 document.addEventListener('DOMContentLoaded', () => {
   initCatApp();
 });
